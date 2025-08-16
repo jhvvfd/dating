@@ -1,4 +1,6 @@
-from future import annotations
+# -*- coding: utf-8 -*-
+# path: bot.py (Part 1/3)
+from __future__ import annotations
 from flask import Flask
 import os
 import json
@@ -10,6 +12,7 @@ from typing import Optional, Dict, List, Tuple
 import telebot
 from telebot import types
 
+# --------------------------- Configuration ---------------------------
 TOKEN = os.getenv("8083007020:AAFdZ5vsSPJYnaKQImUOVd7IC_JMEPYd66E", "8083007020:AAFdZ5vsSPJYnaKQImUOVd7IC_JMEPYd66E")
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")  # HTML for <b><i>...</i></b>
 
@@ -18,15 +21,19 @@ MAX_PHOTOS = 3
 ANON_MESSAGE_BONUS = 0.01
 
 DEFAULT_FILTERS = {"city": None, "age_min": None, "age_max": None, "pref": None}
-WELCOME_IMAGE_URL = ""   # optional
-SAFETY_IMAGE_URL = ""    # optional
+WELCOME_IMAGE_URL = ""   # опционально: URL красивой картинки для приветствия
+SAFETY_IMAGE_URL = ""    # опционально: URL для сообщений безопасности
 
+# Очередь/пары аноним-чата и статистика беседы
 ANON_QUEUE: List[int] = []
 ANON_PEERS: Dict[int, int] = {}
-ANON_STATS: Dict[int, dict] = {}
+ANON_STATS: Dict[int, dict] = {}  # {uid: {partner, start_ts, counts:{text,photo,video,audio,voice,document,sticker}}}
 
+# Сессии и временные состояния
 USER_SESSION: Dict[int, dict] = {}
 SEARCH_STATE: Dict[int, dict] = {}
+
+# Лента "Кто меня лайкнул": { user_id: {"queue": [ids], "idx": int, "current": int} }
 LIKERS_STATE: Dict[int, dict] = {}
 
 app = Flask(name)
@@ -35,25 +42,8 @@ app = Flask(name)
 def home():
     return "Render done"
 
-if name == "main":
+if name == "piska":
     app.run(host="0.0.0.0", port=5000)
-
-def get_actions_kb() -> types.ReplyKeyboardMarkup:
-    m = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    m.row("❤️ Лайк", "⏭ Скип")
-    m.row("💬 Сообщение", "🚫 Блок")
-    m.row("⚠️ Пожаловаться", "⬅ Назад")
-    return m
-
-
-if os.path.exists(USER_FILE):
-    with open(USER_FILE, "r", encoding="utf-8") as f:
-        users: Dict[str, dict] = json.load(f)
-else:
-    users = {}
-
-def now_ts() -> float:
-    return time.time()
 
 def get_actions_kb() -> types.ReplyKeyboardMarkup:
     m = types.ReplyKeyboardMarkup(resize_keyboard=True)
