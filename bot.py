@@ -28,15 +28,17 @@ USER_SESSION: Dict[int, dict] = {}
 SEARCH_STATE: Dict[int, dict] = {}
 LIKERS_STATE: Dict[int, dict] = {}
 
+
 app = Flask(__name__)
 
 @app.route("/")
 def home():
     return "Render done"
 
-if name == "main":
+if __name__ == "__main__":  
     app.run(host="0.0.0.0", port=5000)
 
+# --------------------------- Helpers ---------------------------
 def get_actions_kb() -> types.ReplyKeyboardMarkup:
     m = types.ReplyKeyboardMarkup(resize_keyboard=True)
     m.row("❤️ Лайк", "⏭ Скип")
@@ -44,7 +46,7 @@ def get_actions_kb() -> types.ReplyKeyboardMarkup:
     m.row("⚠️ Пожаловаться", "⬅ Назад")
     return m
 
-
+# --------------------------- Storage ---------------------------
 if os.path.exists(USER_FILE):
     with open(USER_FILE, "r", encoding="utf-8") as f:
         users: Dict[str, dict] = json.load(f)
@@ -53,13 +55,6 @@ else:
 
 def now_ts() -> float:
     return time.time()
-
-def get_actions_kb() -> types.ReplyKeyboardMarkup:
-    m = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    m.row("❤️ Лайк", "⏭ Скип")
-    m.row("💬 Сообщение", "🚫 Блок")
-    m.row("⚠️ Пожаловаться", "⬅ Назад")
-    return m
 
 # --------------------------- Storage ---------------------------
 if os.path.exists(USER_FILE):
