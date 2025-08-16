@@ -1,4 +1,3 @@
-from future import annotations
 from flask import Flask
 import os
 import json
