@@ -28,7 +28,7 @@ USER_SESSION: Dict[int, dict] = {}
 SEARCH_STATE: Dict[int, dict] = {}
 LIKERS_STATE: Dict[int, dict] = {}
 
-app = Flask(name)
+app = Flask(__name__)
 
 @app.route("/")
 def home():
